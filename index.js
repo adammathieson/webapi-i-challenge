@@ -9,7 +9,7 @@ server.use(express.json());
 
 //Post
 server.post('/api/users', (req, res) => {
-    const { name, bio, created_at, updated_at } = req.body;
+    const { name, bio} = req.body;
     if (!name || !bio) {
         return res.status(400).json({ errorMessage: 'Please provide name and bio for the user.' })
     }
@@ -20,8 +20,8 @@ server.post('/api/users', (req, res) => {
             created_at,
             updated_at
         })
-        .then(res => {
-            res.status(201).json(res);   
+        .then(user => {
+            res.status(201).json(user);   
         })
         .catch(() => {
             res.status(500).json({ error: 'There was an error while saving the user to the database.' })
@@ -45,11 +45,11 @@ server.get('/api/users/:id', (req, res) => {
     const id = req.params.id;
         db
             .findById(id)
-            .then(users => {
-                if(!user.id) {
+            .then(user => {
+                if(!user) {
                     res.status(404).json({ message: 'The user with the specified id does not exist.' })
                 }
-                res.status(202).json(users);
+                res.status(202).json(user);
             })
             .catch(error => {
                 res.status(500).json({ error: 'The user information could not be retrieved.' })
@@ -57,7 +57,7 @@ server.get('/api/users/:id', (req, res) => {
 })
 
 //Delete
-server.delete('/user/:id', (req, res) => {
+server.delete('/api/user/:id', (req, res) => {
     const id = req.params.id;
     db
         .remove(id)
@@ -75,13 +75,13 @@ server.delete('/user/:id', (req, res) => {
 
 //Update
 server.put('/user/:id', (req, res) => {
-    const id = req.params;
-    const { name, bio, changes} = req.body;
+    const id = req.params.id;
+    const { name, bio } = req.body;
     if (!name || !bio) {
         return res.status(400).json({ errorMessage: 'Please provide name and bio for the user.' })
     }
     db
-        .update(id, changes)
+        .update(id, req.boy)
         .then(updated => {
             if (updated) {
                 res.status(200).json(updated);
