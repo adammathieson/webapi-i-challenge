@@ -35,21 +35,22 @@ server.get('/api/users/:id', (req, res) => {
 
 //Post
 server.post('/api/users', (req, res) => {
-    const userInfo = req.body;
-    console.log('user information', userInfo)
-    
+    const { name, bio, created_at, updated_at } = req.body;
+    if (!name || !bio) {
+        return res.status(400).json({ errorMessage: 'Please provide name and bio for the user' })
+    }
     db
-        .insert(userInfo)
-        .then(user => {
-            if (!req.body.name || !req.body.bio) {
-                res.status(400).json
-            } else {
-                res.status(201).json(user);
-            }
-        
+        .insert({
+            name,
+            bio,
+            created_at,
+            updated_at
+        })
+        .then(res => {
+            res.status(201).json(res);   
         })
         .catch(error => {
-            res.status(400).json({ errorMessage: 'Please provide name and bio for the user' })
+            res.status(400).json({ error: error })
         })
 })
 
